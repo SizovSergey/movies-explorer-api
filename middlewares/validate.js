@@ -44,6 +44,7 @@ const movieValidate = celebrate({
   }),
 });
 
+
 module.exports = {
   userValidate,
   loginValidate,
