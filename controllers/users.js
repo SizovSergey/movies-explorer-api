@@ -11,9 +11,10 @@ const UnauthorizedError = require('../errors/unauthorizedError');
 
 module.exports.createUser = (req, res, next) => {
   const {
-    name, email, password,
+    name,
+    email,
+    password,
   } = req.body;
-
   return bcrypt.hash(password, 10)
     .then((hash) => User.create({
       name,
@@ -53,19 +54,28 @@ module.exports.getCurrentUser = (req, res, next) => {
 
 module.exports.updateUser = (req, res, next) => {
   const { name, email } = req.body;
-  User.findByIdAndUpdate(req.user._id, { name, email }, { new: true, runValidators: true })
-    .then((user) => {
-      if (!user) {
-        throw new NotFoundError({ message: 'Нет пользователя с таким id' });
+
+  User.findOne({ email })
+    .then((currentUser) => {
+      if (currentUser && currentUser._id !== req.user._id) {
+        throw new ConflictError('Введите другой email.Пользователь с таким email уже существует');
       }
-      res.status(200).send(user);
+
+      User.findByIdAndUpdate(req.user._id, { name, email }, { new: true, runValidators: true })
+        .then((user) => {
+          if (!user) {
+            throw new NotFoundError({ message: 'Нет пользователя с таким id' });
+          }
+          res.status(200).send(user);
+        })
+        .catch((err) => {
+          if (err.name === 'CastError') {
+            return next(new BadRequestError('Неправильный тип данных'));
+          }
+          return next(err);
+        });
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return next(new BadRequestError('Неправильный тип данных'));
-      }
-      return next(err);
-    });
+    .catch((err) => next(err));
 };
 
 module.exports.login = (req, res, next) => {
@@ -77,12 +87,6 @@ module.exports.login = (req, res, next) => {
       }
       const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'supersecretkey', { expiresIn: '7d' });
       res
-        .cookie('token', token, {
-          httpOnly: true,
-          sameSite: 'none',
-          secure: true,
-          maxAge: 3600000 * 24 * 7,
-        })
         .status(200)
         .send({ token });
     })

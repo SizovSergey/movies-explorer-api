@@ -1,10 +1,16 @@
-
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const validator = require('validator');
 const UnauthorizedError = require('../errors/unauthorizedError');
 
 const userSchema = new mongoose.Schema({
+
+  name: {
+    type: String,
+    minlength: 2,
+    maxlength: 30,
+    required: true,
+  },
 
   email: {
     type: String,
@@ -15,19 +21,12 @@ const userSchema = new mongoose.Schema({
       message: 'Неправильный формат почты',
     },
   },
-
   password: {
     type: String,
     required: true,
     select: false,
   },
 
-  name: {
-    type: String,
-    minlength: 2,
-    maxlength: 30,
-    required: true,
-  },
 }, { versionKey: false });
 
 userSchema.statics.findUserByCredentials = function (email, password) {

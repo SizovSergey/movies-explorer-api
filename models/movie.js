@@ -1,18 +1,16 @@
 const mongoose = require('mongoose');
 
-const urlRegex = /^(https?:\/\/)(www\.)?([a-z0-9._]+)\.([a-z]{2,6}\.?)(\/[\w.]*)*\/?#?$/i;
+const validator = require('validator');
 
 const movieSchema = new mongoose.Schema({
 
   country: {
     type: String,
-    maxlength: 30,
     required: true,
   },
 
   director: {
     type: String,
-    maxlength: 30,
     required: true,
   },
 
@@ -23,6 +21,7 @@ const movieSchema = new mongoose.Schema({
 
   year: {
     type: String,
+    maxlength: 4,
     required: true,
   },
 
@@ -34,27 +33,27 @@ const movieSchema = new mongoose.Schema({
   image: {
     type: String,
     required: true,
-    pattern: {
-      params: urlRegex,
-      message: 'неправильный url',
+    validate: {
+      validator: (value) => validator.isUrl(value),
+      message: 'Неправильная ссылка на постер фильма',
     },
   },
 
   trailerLink: {
     type: String,
     required: true,
-    pattern: {
-      params: urlRegex,
-      message: 'неправильный url',
+    validate: {
+      validator: (value) => validator.isUrl(value),
+      message: 'Неправильная ссылка на трейлер фильма',
     },
   },
 
   thumbnail: {
     type: String,
     required: true,
-    pattern: {
-      params: urlRegex,
-      message: 'неправильный url',
+    validate: {
+      validator: (value) => validator.isUrl(value),
+      message: 'Неправильная ссылка на мини постер фильма',
     },
   },
 
