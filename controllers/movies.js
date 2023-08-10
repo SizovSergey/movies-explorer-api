@@ -63,6 +63,7 @@ module.exports.addFavoriteMovie = (req, res, next) => {
       res.status(201).send(movie);
     })
     .catch((err) => {
+      console.error(err);
       if (err.name === 'ValidationError') {
         return next(new BadRequestError('Переданы неверные данные.'));
       }

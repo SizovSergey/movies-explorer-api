@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 
 const validator = require('validator');
 
+const urlRegex = /^(https?:\/\/)(www\.)?([a-z0-9._]+)\.([a-z]{2,6}\.?)(\/[\w.]*)*\/?#?$/i;
+
 const movieSchema = new mongoose.Schema({
 
   country: {
@@ -33,8 +35,8 @@ const movieSchema = new mongoose.Schema({
   image: {
     type: String,
     required: true,
-    validate: {
-      validator: (value) => validator.isUrl(value),
+    pattern: {
+      params: urlRegex,
       message: 'Неправильная ссылка на постер фильма',
     },
   },
@@ -42,8 +44,8 @@ const movieSchema = new mongoose.Schema({
   trailerLink: {
     type: String,
     required: true,
-    validate: {
-      validator: (value) => validator.isUrl(value),
+    pattern: {
+      params: urlRegex,
       message: 'Неправильная ссылка на трейлер фильма',
     },
   },
@@ -51,8 +53,8 @@ const movieSchema = new mongoose.Schema({
   thumbnail: {
     type: String,
     required: true,
-    validate: {
-      validator: (value) => validator.isUrl(value),
+    pattern: {
+      params: urlRegex,
       message: 'Неправильная ссылка на мини постер фильма',
     },
   },
