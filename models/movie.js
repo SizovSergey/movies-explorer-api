@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
 
-const validator = require('validator');
-
 const urlRegex = /^(https?:\/\/)(www\.)?([a-z0-9._]+)\.([a-z]{2,6}\.?)(\/[\w.]*)*\/?#?$/i;
 
 const movieSchema = new mongoose.Schema({

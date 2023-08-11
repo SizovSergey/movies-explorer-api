@@ -4,6 +4,10 @@ const router = express.Router();
 
 const { requestLogger, errorLogger } = require('../middlewares/logger');
 
+const auth = require('../middlewares/auth');
+
+const apiLimiter = require('../utils/limiter');
+
 const NotFoundError = require('../errors/notFoundError');
 
 const loginRouter = require('./signIn');
@@ -13,17 +17,13 @@ const moviesRouter = require('./movies');
 
 router.use(requestLogger);
 
-router.get('/crash-test', () => {
-  setTimeout(() => {
-    throw new Error('Сервер сейчас упадёт');
-  }, 0);
-});
+router.use(apiLimiter);
 
 router.use('/signin', loginRouter);
 router.use('/signup', registerRouter);
 router.use('/users', usersRouter);
 router.use('/movies', moviesRouter);
-router.use(() => {
+router.use(auth, () => {
   throw new NotFoundError('неверный эндпойнт');
 });
 

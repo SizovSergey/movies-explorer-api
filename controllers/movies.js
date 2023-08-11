@@ -4,7 +4,7 @@ const NotFoundError = require('../errors/notFoundError');
 const ForbiddenError = require('../errors/forbiddenError');
 
 module.exports.getFavoriteMovies = (req, res, next) => {
-  Movie.find({})
+  Movie.find({ owner: req.user._id })
     .then((movies) => {
       res.status(200).send(movies);
     })
@@ -38,7 +38,7 @@ module.exports.addFavoriteMovie = (req, res, next) => {
     duration,
     year,
     description,
-    image,
+    image = req.image.url,
     trailerLink,
     nameRU,
     nameEN,
@@ -63,7 +63,6 @@ module.exports.addFavoriteMovie = (req, res, next) => {
       res.status(201).send(movie);
     })
     .catch((err) => {
-      console.error(err);
       if (err.name === 'ValidationError') {
         return next(new BadRequestError('Переданы неверные данные.'));
       }

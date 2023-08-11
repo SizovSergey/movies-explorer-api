@@ -42,7 +42,7 @@ module.exports.createUser = (req, res, next) => {
 module.exports.getCurrentUser = (req, res, next) => {
   const id = req.user._id;
 
-  User.findById(id)
+  User.findById(id, { _id: 0 })
     .then((user) => {
       if (!user) {
         throw new NotFoundError({ message: 'Нет пользователя с таким id' });
