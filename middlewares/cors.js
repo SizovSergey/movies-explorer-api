@@ -1,4 +1,6 @@
 const allowedCors = [
+  'http://ssgdiplom.nomoreparti.nomoredomainsicu.ru',
+  'https://ssgdiplom.nomoreparti.nomoredomainsicu.ru',
   'http://localhost:3000',
   'https://localhost:3000',
 ];
