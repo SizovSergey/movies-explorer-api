@@ -52,23 +52,30 @@ module.exports.getCurrentUser = (req, res, next) => {
     .catch((err) => next(err));
 };
 
-Module.exports.updateUser = (req, res, next) => {
-  const { name, email } = req.body;
-  
-  User.findByIdAndUpdate(req.user._id, { name, email }, { new: true, runValidators: true })
-    .then((user) => {
-      if (!user) {
-        throw new NotFoundError({ message: 'Нет пользователя с таким идентификатором' });
-      }
-      res.status(200).send(user);
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return next(new BadRequestError('Неправильный тип данных'));
-      }
-      return next(err);
-    });
+module.exports.updateUser = async (req, res, next) => {
+  try {
+    const { name, email } = req.body;
+    const currentUser = await User.findOne({ email });
+
+    if (currentUser && currentUser._id !== req.user._id) {
+      throw new ConflictError('Введите другой email. Пользователь с таким email уже существует');
+    }
+
+    const user = await User.findByIdAndUpdate(req.user._id, { name, email }, { new: true, runValidators: true });
+
+    if (!user) {
+      throw new NotFoundError({ message: 'Нет пользователя с таким id' });
+    }
+
+    res.status(200).send(user);
+  } catch (err) {
+    if (err.name === 'CastError') {
+      return next(new BadRequestError('Неправильный тип данных'));
+    }
+    return next(err);
+  }
 };
+
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
