@@ -57,7 +57,7 @@ module.exports.updateUser = (req, res, next) => {
 
   User.findOne({ email })
     .then((currentUser) => {
-      if (currentUser && currentUser._id !== req.user._id) {
+      if (currentUser._id !== req.user._id) {
         throw new ConflictError('Введите другой email.Пользователь с таким email уже существует');
       }
 
