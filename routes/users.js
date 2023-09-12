@@ -5,12 +5,12 @@ const router = express.Router();
 const auth = require('../middlewares/auth');
 
 const {
-  updateUserInfo, getCurrentUser,
+  updateUser, getCurrentUser,
 } = require('../controllers/users');
 
 const { userUpdateValidate } = require('../middlewares/validate');
 
 router.get('/me', auth, getCurrentUser);
-router.patch('/me', auth, userUpdateValidate, updateUserInfo);
+router.patch('/me', auth, userUpdateValidate, updateUser);
 
 module.exports = router;
