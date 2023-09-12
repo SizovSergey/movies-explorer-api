@@ -52,23 +52,27 @@ module.exports.getCurrentUser = (req, res, next) => {
     .catch((err) => next(err));
 };
 
-module.exports.updateUser = (req, res, next) => {
+module.exports.updateUserInfo = (req, res, next) => {
   const { name, email } = req.body;
-
-  User.findByIdAndUpdate(req.user._id, { name, email }, { new: true, runValidators: true })
+  console.log(req.body);
+  User.findByIdAndUpdate(
+    req.user._id,
+    { name, email },
+    { new: true, runValidators: true },
+  )
     .then((user) => {
-      if (!user) {
-        throw new NotFoundError({ message: 'Нет пользователя с таким id' });
-      }
-      res.status(200).send(user);
+      console.log(user);
+      res.send({ data: user });
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return next(new BadRequestError('Неправильный тип данных'));
+    .catch((error) => {
+      if (error.name === "ValidationError") {
+        throw new BadRequestError(badRequestError.fatal);
+      } else if (error.name === "NotFound") {
+        throw new NotFoundError(notFoundErr.userId);
       }
-      return next(err);
-    });
+    }).catch(next);
 };
+
 
 
 module.exports.login = (req, res, next) => {
